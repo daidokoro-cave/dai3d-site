@@ -3,74 +3,116 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DAI — Cabinet design for SketchUp</title>
-<meta name="description" content="DAI is a SketchUp extension for cabinet makers: parametric cabinets, cut lists, DXF for CNC, joinery and drawer hardware — built by a working cabinet shop.">
+<title>DAI — AI-native cabinet design for SketchUp</title>
+<meta name="description" content="Describe a cabinet in plain language — or hand DAI a plan or a photo — and watch it drawn in your SketchUp model. Built on a production cabinet toolkit by a working shop.">
 <style>
   :root{
-    --ink:#26211c; --ink-soft:#5c5248; --paper:#faf7f3; --card:#ffffff;
-    --wood:#8b5a2b; --wood-dark:#6e4520; --accent:#c8862f;
-    --line:#e6ddd2; --ok:#3e7a45;
+    --bg:#0e1116; --bg-soft:#151a21; --panel:#1a212b; --line:#2a3340;
+    --ink:#e8edf4; --ink-soft:#9aa7b8; --ink-faint:#6b7686;
+    --amber:#e8a13d; --amber-soft:#f3c177; --amber-dark:#b87a1f;
+    --blue:#7fb4e8; --cyan:#79d4d0;
+    --ok:#5bc476;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
-  a{color:var(--wood);text-decoration:none}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  a{color:var(--amber);text-decoration:none}
   a:hover{text-decoration:underline}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .mono{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
 
-  header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  header{background:rgba(14,17,22,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
   .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .brand{font-weight:800;font-size:1.35rem;letter-spacing:.02em;color:var(--ink)}
-  .brand span{color:var(--wood)}
+  .brand{font-weight:800;font-size:1.35rem;letter-spacing:.02em;color:var(--ink);margin-right:28px}
+  .brand span{color:var(--amber)}
   .nav-right{display:flex;align-items:center;gap:20px;font-size:.95rem}
+  .nav-right a{color:var(--ink-soft)}
+  .nav-right a:hover{color:var(--amber);text-decoration:none}
   .lang-btn{border:1px solid var(--line);background:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.85rem;color:var(--ink-soft)}
-  .lang-btn:hover{border-color:var(--wood);color:var(--wood)}
+  .lang-btn:hover{border-color:var(--amber);color:var(--amber)}
 
-  .hero{padding:72px 0 56px;text-align:center}
-  .hero h1{font-size:2.6rem;line-height:1.15;max-width:760px;margin:0 auto 18px;font-weight:800}
-  .hero h1 em{color:var(--wood);font-style:normal}
-  .hero p.sub{font-size:1.2rem;color:var(--ink-soft);max-width:640px;margin:0 auto 32px}
+  .hero{position:relative;padding:80px 0 64px;text-align:center;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;opacity:.25;mask-image:radial-gradient(ellipse 70% 60% at 50% 35%,#000 30%,transparent 75%)}
+  .hero > *{position:relative}
+  .chip{display:inline-block;border:1px solid var(--amber-dark);color:var(--amber-soft);border-radius:999px;padding:5px 14px;font-size:.82rem;margin-bottom:22px;background:rgba(232,161,61,.08)}
+  .hero h1{font-size:3rem;line-height:1.12;max-width:780px;margin:0 auto 18px;font-weight:800}
+  .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--amber-soft),var(--amber) 60%,var(--amber-dark));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.sub{font-size:1.15rem;color:var(--ink-soft);max-width:680px;margin:0 auto 32px}
   .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   .btn{display:inline-block;padding:13px 26px;border-radius:8px;font-weight:600;font-size:1rem}
-  .btn-primary{background:var(--wood);color:#fff}
-  .btn-primary:hover{background:var(--wood-dark);text-decoration:none}
-  .btn-ghost{border:1.5px solid var(--wood);color:var(--wood)}
-  .btn-ghost:hover{background:#f3e9dd;text-decoration:none}
-  .trial-note{margin-top:14px;font-size:.9rem;color:var(--ink-soft)}
+  .btn-primary{background:linear-gradient(100deg,var(--amber),var(--amber-dark));color:#15100a;box-shadow:0 4px 24px rgba(232,161,61,.25)}
+  .btn-primary:hover{filter:brightness(1.1);text-decoration:none}
+  .btn-ghost{border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--amber);color:var(--amber);text-decoration:none}
+  .trial-note{margin-top:14px;font-size:.9rem;color:var(--ink-faint)}
 
-  .shot{max-width:880px;margin:48px auto 0;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 12px 40px rgba(60,40,20,.10);overflow:hidden}
-  .shot .placeholder{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);background:repeating-linear-gradient(45deg,#f4ede4,#f4ede4 14px,#efe6da 14px,#efe6da 28px);font-size:.95rem}
+  .demo{max-width:860px;margin:52px auto 0;border:1px solid var(--line);border-radius:14px;background:var(--bg-soft);box-shadow:0 16px 60px rgba(0,0,0,.45);overflow:hidden;text-align:left}
+  .demo-bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .demo-bar .title{margin-left:8px;font-size:.8rem;color:var(--ink-faint)}
+  .demo-body{display:grid;grid-template-columns:1fr 1fr;min-height:300px}
+  @media (max-width:720px){.demo-body{grid-template-columns:1fr}}
+  .demo-chat{padding:24px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+  @media (max-width:720px){.demo-chat{border-right:none;border-bottom:1px solid var(--line)}}
+  .msg-user{align-self:flex-end;background:#26303d;border:1px solid var(--line);border-radius:12px 12px 2px 12px;padding:10px 14px;font-size:.92rem;max-width:90%;min-height:64px}
+  .msg-user .caret{display:inline-block;width:8px;height:1.05em;vertical-align:text-bottom;background:var(--amber);animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .msg-ai{align-self:flex-start;border-radius:12px 12px 12px 2px;padding:10px 14px;font-size:.92rem;color:var(--cyan);border:1px solid rgba(121,212,208,.25);background:rgba(121,212,208,.06);opacity:0;transition:opacity .5s}
+  .msg-ai.on{opacity:1}
+  .demo-canvas{padding:18px;display:flex;align-items:center;justify-content:center;background:
+    radial-gradient(ellipse at 60% 40%,rgba(127,180,232,.06),transparent 70%)}
+  .demo-canvas svg{width:100%;max-width:340px;height:auto}
+  .bp{fill:none;stroke:var(--blue);stroke-width:1.6;stroke-linecap:round}
+  .bp.amber{stroke:var(--amber)}
+  .bp.dim{stroke:var(--ink-faint);stroke-width:1}
+  .bp-label{fill:var(--ink-faint);font-family:Consolas,Menlo,monospace;font-size:10px}
 
-  section{padding:64px 0}
-  h2{font-size:1.8rem;margin-bottom:8px;text-align:center}
-  .kicker{text-align:center;color:var(--ink-soft);max-width:620px;margin:0 auto 40px}
+  section{padding:72px 0}
+  h2{font-size:1.9rem;margin-bottom:8px;text-align:center}
+  .kicker{text-align:center;color:var(--ink-soft);max-width:680px;margin:0 auto 44px}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px}
+  .card{background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:26px;position:relative}
   .card h3{font-size:1.05rem;margin-bottom:8px}
   .card p{font-size:.95rem;color:var(--ink-soft)}
-  .card .ico{font-size:1.5rem;margin-bottom:10px;display:block}
+  .card .ico{font-size:1.6rem;margin-bottom:12px;display:block}
+  .card.ai{background:linear-gradient(160deg,rgba(232,161,61,.07),var(--bg-soft) 55%);border-color:#3a3326}
+  .status{position:absolute;top:18px;right:18px;font-size:.72rem;border-radius:999px;padding:3px 10px;letter-spacing:.03em}
+  .status.early{color:var(--amber-soft);border:1px solid var(--amber-dark);background:rgba(232,161,61,.1)}
+  .status.dev{color:var(--cyan);border:1px solid rgba(121,212,208,.4);background:rgba(121,212,208,.07)}
+  .status.road{color:var(--ink-faint);border:1px solid var(--line)}
+  .mcp-note{text-align:center;color:var(--ink-faint);font-size:.88rem;max-width:640px;margin:36px auto 0}
 
-  .pricing-box{max-width:420px;margin:0 auto;background:var(--card);border:2px solid var(--wood);border-radius:14px;padding:36px;text-align:center}
-  .price{font-size:3rem;font-weight:800}
+  .today{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .today .card{background:var(--panel)}
+
+  .pricing-box{max-width:430px;margin:0 auto;background:var(--bg-soft);border:1.5px solid var(--amber-dark);border-radius:16px;padding:38px;text-align:center;box-shadow:0 0 60px rgba(232,161,61,.08)}
+  .price{font-size:3.1rem;font-weight:800}
   .price small{font-size:1.05rem;font-weight:500;color:var(--ink-soft)}
   .pricing-box ul{list-style:none;margin:22px 0;text-align:left}
-  .pricing-box li{padding:7px 0;font-size:.97rem}
+  .pricing-box li{padding:7px 0;font-size:.97rem;color:var(--ink)}
   .pricing-box li::before{content:"✓ ";color:var(--ok);font-weight:700}
-  .pricing-foot{font-size:.85rem;color:var(--ink-soft);margin-top:14px}
+  .pricing-foot{font-size:.85rem;color:var(--ink-faint);margin-top:14px}
 
   .steps{counter-reset:step;max-width:560px;margin:0 auto}
   .step{display:flex;gap:16px;padding:14px 0;align-items:baseline}
-  .step::before{counter-increment:step;content:counter(step);flex:0 0 32px;height:32px;border-radius:50%;background:var(--wood);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .step p{color:var(--ink-soft)}
+  .step::before{counter-increment:step;content:counter(step);flex:0 0 32px;height:32px;border-radius:50%;background:linear-gradient(100deg,var(--amber),var(--amber-dark));color:#15100a;font-weight:700;display:flex;align-items:center;justify-content:center}
 
-  .shop{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .shop .inner{max-width:680px;margin:0 auto;text-align:center}
   .shop p{color:var(--ink-soft)}
 
-  footer{padding:40px 0;text-align:center;font-size:.85rem;color:var(--ink-soft)}
+  footer{padding:40px 0;text-align:center;font-size:.85rem;color:var(--ink-faint);border-top:1px solid var(--line)}
   footer .links{margin-bottom:10px}
-  footer .links a{margin:0 10px;color:var(--ink-soft)}
+  footer .links a{margin:0 10px;color:var(--ink-faint)}
 
-  @media (max-width:600px){.hero h1{font-size:1.9rem}.hero{padding:48px 0 40px}}
+  @media (max-width:600px){.hero h1{font-size:2.05rem}.hero{padding:52px 0 44px}}
+  @media (prefers-reduced-motion:reduce){
+    .msg-user .caret{animation:none}
+    .bp{stroke-dasharray:none !important;stroke-dashoffset:0 !important;transition:none !important}
+    .msg-ai{opacity:1;transition:none}
+  }
 </style>
 </head>
 <body>
@@ -79,7 +121,8 @@
   <div class="wrap nav">
     <div class="brand">DAI<span>.</span></div>
     <div class="nav-right">
-      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#ai" data-i18n="nav_ai">AI</a>
+      <a href="#today" data-i18n="nav_features">Toolkit</a>
       <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
       <a href="https://github.com/daidokoro-cave/dai-releases/releases" data-i18n="nav_download">Download</a>
       <button class="lang-btn" id="langToggle" onclick="toggleLang()">ES</button>
@@ -90,23 +133,61 @@
 <main>
   <div class="wrap">
     <div class="hero">
-      <h1 data-i18n-html="hero_h1">Cabinet design for SketchUp, <em>built by a working shop</em></h1>
-      <p class="sub" data-i18n="hero_sub">DAI turns SketchUp into your cabinet workflow: parametric cabinets, cut lists, DXF for your CNC, joinery and drawer hardware — without leaving the model.</p>
+      <span class="chip" data-i18n="hero_chip">⚡ Where cabinet making is going</span>
+      <h1 data-i18n-html="hero_h1">Describe it. <em>DAI draws it.</em></h1>
+      <p class="sub" data-i18n="hero_sub">DAI is bringing AI into SketchUp cabinet design: tell it what you need in plain language — or hand it a plan or a photo — and watch the cabinets appear in your model. Built on the production toolkit our own shop runs every day.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#trial" data-i18n="cta_trial">Start 7-day free trial</a>
-        <a class="btn btn-ghost" href="#features" data-i18n="cta_more">See what it does</a>
+        <a class="btn btn-ghost" href="#ai" data-i18n="cta_more">See the AI workflow</a>
       </div>
-      <p class="trial-note" data-i18n="trial_note">Full-featured trial · No credit card · 2 PCs per license</p>
-      <div class="shot">
-        <div class="placeholder" data-i18n="shot_placeholder">[ Screenshot: DAI cabinet designer inside SketchUp — coming soon ]</div>
+      <p class="trial-note" data-i18n="trial_note">Trial covers the full toolkit · AI features rolling out in early access</p>
+
+      <div class="demo">
+        <div class="demo-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="title mono" data-i18n="demo_title">DAI · AI session — concept preview</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-chat">
+            <div class="msg-user mono"><span id="typed"></span><span class="caret"></span></div>
+            <div class="msg-ai mono" id="aiMsg" data-i18n="demo_ai">✓ Drawing in your model…</div>
+          </div>
+          <div class="demo-canvas">
+            <svg viewBox="0 0 320 260" aria-label="Cabinet blueprint being drawn">
+              <path class="bp" d="M20 20 H300 V210 H20 Z"/>
+              <path class="bp" d="M34 210 V230 M286 210 V230 M34 230 H286"/>
+              <path class="bp amber" d="M32 32 H288 V76 H32 Z"/>
+              <path class="bp amber" d="M32 88 H288 V140 H32 Z"/>
+              <path class="bp amber" d="M32 152 H288 V198 H32 Z"/>
+              <path class="bp amber" d="M140 54 H180 M140 114 H180 M140 175 H180"/>
+              <path class="bp dim" d="M310 20 V210 M306 20 H314 M306 210 H314"/>
+              <text class="bp-label" x="305" y="120" transform="rotate(90 305 120)">34.5"</text>
+              <path class="bp dim" d="M20 244 H300 M20 240 V248 M300 240 V248"/>
+              <text class="bp-label" x="148" y="240">36"</text>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <section id="features">
+  <section id="ai">
     <div class="wrap">
-      <h2 data-i18n="feat_h2">From model to cut list to CNC</h2>
-      <p class="kicker" data-i18n="feat_kicker">Every tool in DAI exists because our own shop needed it. No demo-ware — this is what we run in production.</p>
+      <h2 data-i18n="ai_h2">The industry of the future, in your shop</h2>
+      <p class="kicker" data-i18n="ai_kicker">DAI exposes its cabinet engine to AI assistants. The model does the drawing; your standards, materials and hardware rules stay in charge.</p>
+      <div class="grid">
+        <div class="card ai"><span class="status early" data-i18n="st_early">EARLY ACCESS</span><span class="ico">🗣️</span><h3 data-i18n="a1_t">Natural language → cabinets</h3><p data-i18n="a1_p">"A 36-inch base with three drawers and Blum undermount slides." Say it — DAI builds it in the model, cut-list ready.</p></div>
+        <div class="card ai"><span class="status dev" data-i18n="st_dev">IN DEVELOPMENT</span><span class="ico">📐</span><h3 data-i18n="a2_t">Plans & photos → models</h3><p data-i18n="a2_p">Hand DAI a kitchen plan or a job-site photo and get a buildable SketchUp layout to refine — not a rendering, real parts.</p></div>
+        <div class="card ai"><span class="status road" data-i18n="st_road">ROADMAP</span><span class="ico">🧠</span><h3 data-i18n="a3_t">AI that builds YOUR way</h3><p data-i18n="a3_p">Your construction methods, your materials, your joinery and hardware catalog — the AI proposes, your standards decide.</p></div>
+      </div>
+      <p class="mcp-note" data-i18n-html="mcp_note">Under the hood: DAI speaks the open <strong>Model Context Protocol (MCP)</strong>, the same standard AI assistants like Claude use to operate real tools. Early access opens to subscribers first.</p>
+    </div>
+  </section>
+
+  <section id="today" class="today">
+    <div class="wrap">
+      <h2 data-i18n="feat_h2">Standing on a real production toolkit</h2>
+      <p class="kicker" data-i18n="feat_kicker">The AI doesn't draw promises — it drives the same tools our shop uses to build cabinets every day. All of this ships today.</p>
       <div class="grid">
         <div class="card"><span class="ico">🗄️</span><h3 data-i18n="f1_t">Cabinet designer</h3><p data-i18n="f1_p">Parametric base, wall and drawer cabinets generated directly in your SketchUp model, with your construction methods.</p></div>
         <div class="card"><span class="ico">📋</span><h3 data-i18n="f2_t">Cut lists</h3><p data-i18n="f2_p">Accurate part lists straight from the model — sizes, materials and edge banding, ready for the panel saw.</p></div>
@@ -121,7 +202,7 @@
   <section id="pricing">
     <div class="wrap">
       <h2 data-i18n="price_h2">Simple pricing</h2>
-      <p class="kicker" data-i18n="price_kicker">About a third less than the leading alternative — same 2-machine licensing.</p>
+      <p class="kicker" data-i18n="price_kicker">About a third less than the leading alternative — same 2-machine licensing. AI early access opens to subscribers first.</p>
       <div class="pricing-box">
         <div class="price">$69<small data-i18n="price_per">/month</small></div>
         <ul>
@@ -130,6 +211,7 @@
           <li data-i18n="p3">7-day free trial, full-featured</li>
           <li data-i18n="p4">Works offline (30-day license cache)</li>
           <li data-i18n="p5">English & Spanish interface</li>
+          <li data-i18n="p6">First in line for AI early access</li>
         </ul>
         <a class="btn btn-primary" href="#trial" data-i18n="cta_trial2">Start free trial</a>
         <p class="pricing-foot" data-i18n="price_foot">Additional PCs: $25/month each · Cancel anytime</p>
@@ -150,9 +232,9 @@
   </section>
 
   <section class="shop">
-    <div class="wrap inner" style="padding:56px 0">
+    <div class="wrap inner" style="padding:24px 0 56px">
       <h2 data-i18n="shop_h2">Built in a real cabinet shop</h2>
-      <p data-i18n-html="shop_p">DAI is developed by <a href="https://daidokoro-inc.com" rel="noopener">Daidokoro Inc</a>, a custom woodworking shop in Doral, Florida with 25+ years in the trade. We build cabinets with this plugin every day — when something annoys us, we fix it before you ever see it.</p>
+      <p data-i18n-html="shop_p">DAI is developed by <a href="https://daidokoro-inc.com" rel="noopener">Daidokoro Inc</a>, a custom woodworking shop in Doral, Florida with 25+ years in the trade. The future we're building is the one we want for our own shop floor — and we fix what annoys us before you ever see it.</p>
     </div>
   </section>
 </main>
@@ -172,14 +254,23 @@
 <script>
 const I18N = {
   es: {
-    nav_features:"Funciones", nav_pricing:"Precio", nav_download:"Descargar",
-    hero_h1:'Diseño de gabinetes para SketchUp, <em>hecho por un taller real</em>',
-    hero_sub:"DAI convierte SketchUp en tu flujo de trabajo de gabinetes: gabinetes paramétricos, listas de corte, DXF para tu CNC, ensambles y herrajes de gavetas — sin salir del modelo.",
-    cta_trial:"Probar 7 días gratis", cta_more:"Ver qué hace",
-    trial_note:"Trial completo · Sin tarjeta · 2 PCs por licencia",
-    shot_placeholder:"[ Captura: diseñador de gabinetes DAI dentro de SketchUp — próximamente ]",
-    feat_h2:"Del modelo a la lista de corte al CNC",
-    feat_kicker:"Cada herramienta de DAI existe porque nuestro propio taller la necesitó. Nada de demos — esto es lo que usamos en producción.",
+    nav_ai:"IA", nav_features:"Herramientas", nav_pricing:"Precio", nav_download:"Descargar",
+    hero_chip:"⚡ Hacia dónde va la fabricación de gabinetes",
+    hero_h1:'Descríbelo. <em>DAI lo dibuja.</em>',
+    hero_sub:"DAI está llevando la IA al diseño de gabinetes en SketchUp: dile lo que necesitas en lenguaje natural — o dale un plano o una foto — y mira los gabinetes aparecer en tu modelo. Construido sobre el toolkit de producción que nuestro propio taller usa todos los días.",
+    cta_trial:"Probar 7 días gratis", cta_more:"Ver el flujo con IA",
+    trial_note:"El trial cubre el toolkit completo · Funciones de IA llegando en acceso anticipado",
+    demo_title:"DAI · sesión de IA — vista conceptual",
+    demo_ai:"✓ Dibujando en tu modelo…",
+    ai_h2:"La industria del futuro, en tu taller",
+    ai_kicker:"DAI expone su motor de gabinetes a asistentes de IA. El modelo dibuja; tus estándares, materiales y reglas de herrajes mandan.",
+    st_early:"ACCESO ANTICIPADO", st_dev:"EN DESARROLLO", st_road:"ROADMAP",
+    a1_t:"Lenguaje natural → gabinetes", a1_p:'"Un base de 36 pulgadas con tres gavetas y correderas Blum undermount." Dilo — DAI lo construye en el modelo, listo para lista de corte.',
+    a2_t:"Planos y fotos → modelos", a2_p:"Dale a DAI el plano de una cocina o una foto de obra y recibe un layout de SketchUp construible para refinar — no un render, piezas reales.",
+    a3_t:"IA que construye a TU manera", a3_p:"Tus métodos de construcción, tus materiales, tu catálogo de ensambles y herrajes — la IA propone, tus estándares deciden.",
+    mcp_note:'Bajo el capó: DAI habla el <strong>Model Context Protocol (MCP)</strong>, el estándar abierto que asistentes como Claude usan para operar herramientas reales. El acceso anticipado abre primero para suscriptores.',
+    feat_h2:"Parado sobre un toolkit de producción real",
+    feat_kicker:"La IA no dibuja promesas — maneja las mismas herramientas con las que nuestro taller fabrica gabinetes todos los días. Todo esto ya está disponible hoy.",
     f1_t:"Diseñador de gabinetes", f1_p:"Gabinetes base, aéreos y de gavetas paramétricos, generados directo en tu modelo de SketchUp con tus métodos de construcción.",
     f2_t:"Listas de corte", f2_p:"Listas de piezas precisas directo del modelo — medidas, materiales y canteado, listas para la escuadradora.",
     f3_t:"Exportación DXF para CNC", f3_p:"Exporta piezas en DXF para tu flujo CNC, con los mecanizados de ensamble incluidos.",
@@ -187,11 +278,11 @@ const I18N = {
     f5_t:"Herrajes de gavetas inteligentes", f5_p:"Gavetas con frente metálico Blum, separadores de corredera que evitan choques con las bases de bisagra, frentes interiores — los detalles que muerden en la instalación.",
     f6_t:"Etiquetas y chequeos", f6_p:"Etiquetas de piezas para el taller, más detección de huelgos y huellas que atrapa los choques de diseño antes de cortar.",
     price_h2:"Precio simple",
-    price_kicker:"Cerca de un tercio menos que la alternativa líder — mismo modelo de licencia por 2 máquinas.",
+    price_kicker:"Cerca de un tercio menos que la alternativa líder — mismo modelo de licencia por 2 máquinas. El acceso anticipado a la IA abre primero para suscriptores.",
     price_per:"/mes",
     p1:"2 PCs incluidas (taller + oficina)", p2:"Todas las funciones, todas las actualizaciones",
     p3:"Trial gratis de 7 días, completo", p4:"Funciona sin internet (licencia en caché 30 días)",
-    p5:"Interfaz en español e inglés",
+    p5:"Interfaz en español e inglés", p6:"Primero en la fila para el acceso anticipado a la IA",
     cta_trial2:"Probar gratis", price_foot:"PC adicional: $25/mes · Cancela cuando quieras",
     how_h2:"Funcionando en minutos",
     how_kicker:"DAI es una extensión firmada de SketchUp. Sin software externo, sin exportaciones que aprender.",
@@ -199,11 +290,24 @@ const I18N = {
     s2:"Instala el .rbz firmado desde nuestra página de releases (SketchUp 2021 o más nuevo, Windows).",
     s3:"Pega tu key en DAI → Config → Licencia. Listo — las actualizaciones se instalan solas.",
     shop_h2:"Hecho en un taller de verdad",
-    shop_p:'DAI lo desarrolla <a href="https://daidokoro-inc.com" rel="noopener">Daidokoro Inc</a>, un taller de carpintería a medida en Doral, Florida con más de 25 años en el oficio. Fabricamos gabinetes con este plugin todos los días — cuando algo nos molesta, lo arreglamos antes de que lo veas.',
+    shop_p:'DAI lo desarrolla <a href="https://daidokoro-inc.com" rel="noopener">Daidokoro Inc</a>, un taller de carpintería a medida en Doral, Florida con más de 25 años en el oficio. El futuro que estamos construyendo es el que queremos para nuestro propio taller — y lo que nos molesta lo arreglamos antes de que lo veas.',
     ft_terms:"Términos", ft_privacy:"Privacidad", ft_refunds:"Reembolsos", ft_contact:"Contacto",
     ft_tag:"DAI es una extensión independiente para SketchUp®. SketchUp es una marca de Trimble Inc."
   }
 };
+const PROMPTS = {
+  en: [
+    'Draw a 36" base cabinet with 3 drawers, Blum undermount slides',
+    'Read this plan and build the uppers for wall B',
+    'Make the island 8 ft long and add a trash pull-out'
+  ],
+  es: [
+    'Dibuja un gabinete base de 36" con 3 gavetas y correderas Blum',
+    'Lee este plano y construye los aéreos de la pared B',
+    'Haz la isla de 8 pies y agrega un basurero extraíble'
+  ]
+};
+
 const EN_CACHE = {};
 document.querySelectorAll("[data-i18n],[data-i18n-html]").forEach(el => {
   const k = el.dataset.i18n || el.dataset.i18nHtml;
@@ -223,6 +327,54 @@ function applyLang() {
 }
 function toggleLang() { lang = lang === "es" ? "en" : "es"; localStorage.setItem("dai_lang", lang); applyLang(); }
 applyLang();
+
+// ---- Hero demo: typewriter + self-drawing blueprint, looped ----
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const typedEl = document.getElementById("typed");
+const aiMsg = document.getElementById("aiMsg");
+const paths = [...document.querySelectorAll(".demo-canvas .bp")];
+const lens = paths.map(p => p.getTotalLength());
+let cycle = 0, timers = [];
+function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+function resetDrawing(){
+  paths.forEach((p,i) => {
+    p.style.transition = "none";
+    p.style.strokeDasharray = lens[i];
+    p.style.strokeDashoffset = lens[i];
+  });
+}
+function draw(){
+  paths.forEach((p,i) => {
+    p.getBoundingClientRect();
+    p.style.transition = `stroke-dashoffset .7s ease ${i*0.22}s`;
+    p.style.strokeDashoffset = 0;
+  });
+}
+function runCycle(){
+  clearTimers();
+  const list = PROMPTS[lang] || PROMPTS.en;
+  const text = list[cycle % list.length];
+  cycle++;
+  typedEl.textContent = "";
+  aiMsg.classList.remove("on");
+  resetDrawing();
+  let i = 0;
+  const type = () => {
+    typedEl.textContent = text.slice(0, ++i);
+    if (i < text.length) timers.push(setTimeout(type, 34));
+    else {
+      timers.push(setTimeout(() => { aiMsg.classList.add("on"); draw(); }, 450));
+      timers.push(setTimeout(runCycle, 8200));
+    }
+  };
+  timers.push(setTimeout(type, 600));
+}
+if (REDUCED) {
+  typedEl.textContent = (PROMPTS[lang] || PROMPTS.en)[0];
+  aiMsg.classList.add("on");
+} else {
+  runCycle();
+}
 </script>
 </body>
 </html>
