@@ -174,16 +174,54 @@
           </div>
           <div class="demo-canvas">
             <svg viewBox="0 0 320 260" aria-label="Cabinet blueprint being drawn">
-              <path class="bp" d="M20 20 H300 V210 H20 Z"/>
-              <path class="bp" d="M34 210 V230 M286 210 V230 M34 230 H286"/>
-              <path class="bp amber" d="M32 32 H288 V76 H32 Z"/>
-              <path class="bp amber" d="M32 88 H288 V140 H32 Z"/>
-              <path class="bp amber" d="M32 152 H288 V198 H32 Z"/>
-              <path class="bp amber" d="M140 54 H180 M140 114 H180 M140 175 H180"/>
-              <path class="bp dim" d="M310 20 V210 M306 20 H314 M306 210 H314"/>
-              <text class="bp-label" x="305" y="120" transform="rotate(90 305 120)">34.5"</text>
-              <path class="bp dim" d="M20 244 H300 M20 240 V248 M300 240 V248"/>
-              <text class="bp-label" x="148" y="240">36"</text>
+              <g id="dscene0">
+                <path class="bp" d="M20 20 H300 V210 H20 Z"/>
+                <path class="bp" d="M34 210 V230 M286 210 V230 M34 230 H286"/>
+                <path class="bp amber" d="M32 32 H288 V76 H32 Z"/>
+                <path class="bp amber" d="M32 88 H288 V140 H32 Z"/>
+                <path class="bp amber" d="M32 152 H288 V198 H32 Z"/>
+                <path class="bp amber" d="M140 54 H180 M140 114 H180 M140 175 H180"/>
+                <path class="bp dim" d="M310 20 V210 M306 20 H314 M306 210 H314"/>
+                <text class="bp-label" x="305" y="120" transform="rotate(90 305 120)">34.5"</text>
+                <path class="bp dim" d="M20 244 H300 M20 240 V248 M300 240 V248"/>
+                <text class="bp-label" x="148" y="240">36"</text>
+              </g>
+              <g id="dscene1">
+                <path class="bp" d="M25 40 H160 V175 H25 Z"/>
+                <path class="bp" d="M160 40 H295 V175 H160 Z"/>
+                <path class="bp amber" d="M29 44 H92 V171 H29 Z"/>
+                <path class="bp amber" d="M93 44 H156 V171 H93 Z"/>
+                <path class="bp amber" d="M164 44 H227 V171 H164 Z"/>
+                <path class="bp amber" d="M228 44 H291 V171 H228 Z"/>
+                <path class="bp dim" d="M29 44 L92 107.5 L29 171"/>
+                <path class="bp dim" d="M156 44 L93 107.5 L156 171"/>
+                <path class="bp dim" d="M164 44 L227 107.5 L164 171"/>
+                <path class="bp dim" d="M291 44 L228 107.5 L291 171"/>
+                <path class="bp amber" d="M86 100 V115 M99 100 V115 M221 100 V115 M234 100 V115"/>
+                <path class="bp dim" d="M25 195 H295 M25 191 V199 M295 191 V199 M160 191 V199"/>
+                <text class="bp-label" x="82" y="212">30"</text>
+                <text class="bp-label" x="218" y="212">30"</text>
+                <circle class="bp" cx="38" cy="22" r="9"/>
+                <text class="bp-label" x="35" y="26">B</text>
+              </g>
+              <g id="dscene2">
+                <path class="bp" d="M10 62 H310 V70 H10 Z"/>
+                <path class="bp" d="M15 70 H305 V174 H15 Z"/>
+                <path class="bp" d="M87.5 70 V174 M160 70 V174 M232.5 70 V174"/>
+                <path class="bp" d="M23 174 V186 M297 174 V186 M23 186 H297"/>
+                <path class="bp amber" d="M20 75 H83 V169 H20 Z"/>
+                <path class="bp dim" d="M20 75 L83 122 L20 169"/>
+                <path class="bp amber" d="M92 75 H155 V169 H92 Z"/>
+                <path class="bp amber" d="M110 82 H137"/>
+                <path class="bp dim" stroke-dasharray="4 3" d="M98 95 H124 V160 H98 Z"/>
+                <path class="bp dim" stroke-dasharray="4 3" d="M126 95 H150 V160 H126 Z"/>
+                <path class="bp amber" d="M164 75 H228 V103 H164 Z M164 107 H228 V135 H164 Z M164 139 H228 V169 H164 Z"/>
+                <path class="bp amber" d="M186 89 H206 M186 121 H206 M186 154 H206"/>
+                <path class="bp amber" d="M237 75 H300 V169 H237 Z"/>
+                <path class="bp dim" d="M300 75 L237 122 L300 169"/>
+                <path class="bp dim" d="M15 215 H305 M15 211 V219 M305 211 V219"/>
+                <text class="bp-label" x="148" y="232">96"</text>
+              </g>
             </svg>
           </div>
         </div>
@@ -383,19 +421,23 @@ applyLang();
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const typedEl = document.getElementById("typed");
 const aiMsg = document.getElementById("aiMsg");
-const paths = [...document.querySelectorAll(".demo-canvas .bp")];
-const lens = paths.map(p => p.getTotalLength());
+// Cada prompt tiene su escena blueprint: 0 = base 36", 1 = aéreos pared B, 2 = isla 96"
+const scenes = ["dscene0","dscene1","dscene2"].map(id => document.getElementById(id));
+const pathsBy = scenes.map(g => [...g.querySelectorAll(".bp")]);
+const lensBy = pathsBy.map(a => a.map(p => p.getTotalLength()));
+let active = 0;
+function showScene(i){ active = i; scenes.forEach((g,j) => g.style.display = j === i ? "" : "none"); }
 let cycle = 0, timers = [];
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
 function resetDrawing(){
-  paths.forEach((p,i) => {
+  pathsBy[active].forEach((p,i) => {
     p.style.transition = "none";
-    p.style.strokeDasharray = lens[i];
-    p.style.strokeDashoffset = lens[i];
+    p.style.strokeDasharray = lensBy[active][i];
+    p.style.strokeDashoffset = lensBy[active][i];
   });
 }
 function draw(){
-  paths.forEach((p,i) => {
+  pathsBy[active].forEach((p,i) => {
     p.getBoundingClientRect();
     p.style.transition = `stroke-dashoffset .7s ease ${i*0.22}s`;
     p.style.strokeDashoffset = 0;
@@ -404,8 +446,10 @@ function draw(){
 function runCycle(){
   clearTimers();
   const list = PROMPTS[lang] || PROMPTS.en;
-  const text = list[cycle % list.length];
+  const idx = cycle % list.length;
+  const text = list[idx];
   cycle++;
+  showScene(idx);
   typedEl.textContent = "";
   aiMsg.classList.remove("on");
   resetDrawing();
@@ -421,6 +465,7 @@ function runCycle(){
   timers.push(setTimeout(type, 600));
 }
 if (REDUCED) {
+  showScene(0);
   typedEl.textContent = (PROMPTS[lang] || PROMPTS.en)[0];
   aiMsg.classList.add("on");
 } else {
