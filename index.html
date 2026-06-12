@@ -107,6 +107,26 @@
   footer .links{margin-bottom:10px}
   footer .links a{margin:0 10px;color:var(--ink-faint)}
 
+  /* ---- Build (scrollytelling) ---- */
+  #build{position:relative;border-top:1px solid var(--line)}
+  .build-pin{min-height:100vh;display:flex;align-items:center;padding:48px 0}
+  .build-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;width:100%}
+  .build-cmd{border:1px solid var(--line);background:var(--bg-soft);border-radius:10px;padding:12px 16px;font-size:.95rem;margin-bottom:20px;min-height:48px}
+  .build-cmd .sign{color:var(--amber);margin-right:8px}
+  .build-stage{position:relative}
+  .build-stage svg{width:100%;max-width:540px;display:block;margin:0 auto;filter:drop-shadow(0 18px 40px rgba(0,0,0,.5))}
+  .badges{position:absolute;top:6px;right:6px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .badge{font-size:.8rem;border:1px solid rgba(91,196,118,.45);color:var(--ok);background:rgba(14,17,22,.85);padding:4px 12px;border-radius:999px;opacity:0}
+  .build-caps{position:relative;min-height:280px}
+  .bcap{position:absolute;top:50%;transform:translateY(-50%);max-width:360px;opacity:0}
+  .bnum{display:block;color:var(--amber);letter-spacing:.18em;font-size:.8rem;margin-bottom:8px}
+  .bcap h3{font-size:1.35rem;margin-bottom:8px}
+  .bcap p{color:var(--ink-soft)}
+  .no-anim .bcap{position:static;transform:none;opacity:1;margin-bottom:26px}
+  .no-anim .badge{opacity:1}
+  .no-anim .build-caps{min-height:0}
+  @media (max-width:860px){.build-grid{grid-template-columns:1fr;gap:20px}.build-caps{min-height:170px}.bcap{max-width:none}}
+
   @media (max-width:600px){.hero h1{font-size:2.05rem}.hero{padding:52px 0 44px}}
   @media (prefers-reduced-motion:reduce){
     .msg-user .caret{animation:none}
@@ -170,6 +190,31 @@
       </div>
     </div>
   </div>
+
+  <section id="build">
+    <div class="build-pin">
+      <div class="wrap build-grid">
+        <div class="build-left">
+          <div class="build-cmd mono"><span class="sign">dai&gt;</span><span id="bCmd"></span><span class="caret" style="display:inline-block;width:8px;height:1.05em;vertical-align:text-bottom;background:var(--amber)"></span></div>
+          <div class="build-stage">
+            <svg id="bSvg" viewBox="0 0 480 440" aria-label="Cabinet assembling step by step"></svg>
+            <div class="badges">
+              <span class="badge mono" id="bdg1" data-i18n="bdg1">Cut list ✓</span>
+              <span class="badge mono" id="bdg2" data-i18n="bdg2">DXF ✓</span>
+              <span class="badge mono" id="bdg3" data-i18n="bdg3">Labels ✓</span>
+            </div>
+          </div>
+        </div>
+        <div class="build-caps">
+          <div class="bcap" id="bcap1"><span class="bnum mono">01 / 05</span><h3 data-i18n="b1_t">Parametric carcass</h3><p data-i18n="b1_p">Sides, deck and back generated with YOUR construction method — stretchers, toe kick and materials included.</p></div>
+          <div class="bcap" id="bcap2"><span class="bnum mono">02 / 05</span><h3 data-i18n="b2_t">Real joinery</h3><p data-i18n="b2_p">Dados and rabbets cut into the actual geometry, with CNC bit relief so parts truly assemble.</p></div>
+          <div class="bcap" id="bcap3"><span class="bnum mono">03 / 05</span><h3 data-i18n="b3_t">Drawers that know their hardware</h3><p data-i18n="b3_p">Boxes sized for Blum undermount slides — spacers automatically avoid hinge-plate collisions.</p></div>
+          <div class="bcap" id="bcap4"><span class="bnum mono">04 / 05</span><h3 data-i18n="b4_t">Fronts with verified reveals</h3><p data-i18n="b4_p">Overlay fronts with consistent gaps — the clash detector warns you before anything is cut.</p></div>
+          <div class="bcap" id="bcap5"><span class="bnum mono">05 / 05</span><h3 data-i18n="b5_t">From model to machine</h3><p data-i18n="b5_p">Cut list, DXF for CNC and shop-floor labels — straight out of this model.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section id="ai">
     <div class="wrap">
@@ -262,6 +307,12 @@ const I18N = {
     trial_note:"El trial cubre el toolkit completo · Funciones de IA llegando en acceso anticipado",
     demo_title:"DAI · sesión de IA — vista conceptual",
     demo_ai:"✓ Dibujando en tu modelo…",
+    b1_t:"Carcasa paramétrica", b1_p:"Laterales, piso y trasera generados con TU método de construcción — refuerzos, zócalo y materiales incluidos.",
+    b2_t:"Ensambles reales", b2_p:"Dados y rebajes tallados en la geometría real, con alivio de fresa CNC para que las piezas realmente ensamblen.",
+    b3_t:"Gavetas que conocen su herraje", b3_p:"Cajas dimensionadas para correderas Blum undermount — separadores que evitan choques con las bases de bisagra.",
+    b4_t:"Frentes con huelgos verificados", b4_p:"Frentes con huelgos consistentes — el detector de choques avisa antes de cortar nada.",
+    b5_t:"Del modelo a la máquina", b5_p:"Lista de corte, DXF para CNC y etiquetas de taller — directo de este modelo.",
+    bdg1:"Lista de corte ✓", bdg2:"DXF ✓", bdg3:"Etiquetas ✓",
     ai_h2:"La industria del futuro, en tu taller",
     ai_kicker:"DAI expone su motor de gabinetes a asistentes de IA. El modelo dibuja; tus estándares, materiales y reglas de herrajes mandan.",
     st_early:"ACCESO ANTICIPADO", st_dev:"EN DESARROLLO", st_road:"ROADMAP",
@@ -375,6 +426,127 @@ if (REDUCED) {
 } else {
   runCycle();
 }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+// ---- Scrollytelling: el gabinete se arma pieza por pieza ----
+(function(){
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("bSvg");
+  const c30 = Math.cos(Math.PI/6), S = 5.4, OX = 212, OY = 232;
+  const P = (X,Y,Z) => [OX + (X-Y)*c30*S, OY + (X+Y)*0.5*S - Z*S];
+  const pts = a => a.map(p => p.join(",")).join(" ");
+  function face(g, corners, fill){
+    const el = document.createElementNS(NS, "polygon");
+    el.setAttribute("points", pts(corners));
+    el.setAttribute("fill", fill);
+    el.setAttribute("stroke", "rgba(18,12,6,.55)");
+    el.setAttribute("stroke-width", ".8");
+    g.appendChild(el);
+  }
+  // Vista desde (+1,+1,+1): caras visibles = tapa (+Z), frente (+Y) y lateral (+X)
+  // c = [tapa, cara frontal (plano Y+d), cara lateral (plano X+w)]
+  function box(X,Y,Z,w,d,h,c){
+    const g = document.createElementNS(NS, "g");
+    face(g, [P(X,Y,Z+h),P(X+w,Y,Z+h),P(X+w,Y+d,Z+h),P(X,Y+d,Z+h)], c[0]);
+    face(g, [P(X,Y+d,Z),P(X+w,Y+d,Z),P(X+w,Y+d,Z+h),P(X,Y+d,Z+h)], c[1]);
+    face(g, [P(X+w,Y,Z),P(X+w,Y+d,Z),P(X+w,Y+d,Z+h),P(X+w,Y,Z+h)], c[2]);
+    svg.appendChild(g);
+    return g;
+  }
+  function line(g, a, b, stroke, w, dash){
+    const el = document.createElementNS(NS, "path");
+    el.setAttribute("d", `M${a[0]} ${a[1]} L${b[0]} ${b[1]}`);
+    el.setAttribute("stroke", stroke); el.setAttribute("stroke-width", w);
+    el.setAttribute("fill", "none"); el.setAttribute("stroke-linecap", "round");
+    if (dash) el.setAttribute("stroke-dasharray", dash);
+    g.appendChild(el);
+  }
+  const PANEL=["#c79d63","#a97f4c","#8a6132"], LIGHT=["#dcc69d","#c0a87e","#a28a60"],
+        FRONT=["#bb8a4e","#9e7038","#815a26"], BACKP=["#6d5836","#5a472a","#4a3a20"],
+        TOE=["#7a6038","#695230","#574326"];
+  // Orden de dibujo = orden de oclusión (atrás → adelante)
+  // Frente del gabinete en Y=24 (mira al espectador, abajo-izquierda)
+  const back = box(.75,0,4.75,34.5,.75,29.75,BACKP);
+  const left = box(0,0,0,.75,24,34.5,PANEL);
+  const deck = box(.75,0,4,34.5,24,.75,PANEL);
+  const toe  = box(.75,20.25,0,34.5,.75,4,TOE);
+  const joints = document.createElementNS(NS,"g");
+  line(joints, P(.75,0,4.4), P(.75,24,4.4), "#e8a13d", 1.5, "5 4");
+  line(joints, P(.75,.75,4.75), P(.75,.75,33.7), "#e8a13d", 1.5, "5 4");
+  line(joints, P(.75,24,4.4), P(35.25,24,4.4), "#e8a13d", 1.5, "5 4");
+  svg.appendChild(joints);
+  const db1 = box(2.5,1.5,6,31,21,6,LIGHT);
+  const db2 = box(2.5,1.5,15.5,31,21,7,LIGHT);
+  const db3 = box(2.5,1.5,25,31,21,7,LIGHT);
+  const right = box(35.25,0,0,.75,24,34.5,PANEL);
+  const top = box(.75,0,33.75,34.5,24,.75,PANEL);
+  function front(z,h){
+    const g = box(0,24,z,36,.75,h,FRONT);
+    line(g, P(14,24.75,z+h-1.8), P(22,24.75,z+h-1.8), "#3a2c1a", 3.2);
+    return g;
+  }
+  const f1 = front(4.25,9.25), f2 = front(13.75,10), f3 = front(24,10.25);
+
+  const CMD = {
+    en: 'build a 36" base cabinet, 3 drawers, Blum undermount slides',
+    es: 'construye un base de 36", 3 gavetas, correderas Blum undermount'
+  };
+  const cmdEl = document.getElementById("bCmd");
+  const tp = { p: 0 };
+  function renderCmd(){
+    const t = CMD[lang] || CMD.en;
+    cmdEl.textContent = t.slice(0, Math.round(tp.p * t.length));
+  }
+  const _toggle = toggleLang;
+  toggleLang = function(){ _toggle(); renderCmd(); };
+
+  if (!window.gsap || !window.ScrollTrigger || REDUCED) {
+    document.getElementById("build").classList.add("no-anim");
+    tp.p = 1; renderCmd();
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.set(left,  {x:-130, autoAlpha:0});
+  gsap.set(right, {x:150,  autoAlpha:0});
+  gsap.set(deck,  {y:130,  autoAlpha:0});
+  gsap.set(back,  {y:-120, autoAlpha:0});
+  gsap.set(toe,   {y:110,  autoAlpha:0});
+  gsap.set(top,   {y:-90,  autoAlpha:0});
+  // Gavetas y frentes entran por el frente real (diagonal abajo-izquierda)
+  gsap.set([db1,db2,db3], {x:-140, y:81, autoAlpha:0});
+  gsap.set([f1,f2,f3], {x:-90, y:52, autoAlpha:0});
+  gsap.set(joints, {autoAlpha:0});
+
+  const tl = gsap.timeline({
+    defaults:{ease:"power2.out", duration:.5},
+    scrollTrigger:{trigger:"#build", start:"top top", end:"+=4200", scrub:1, pin:true, anticipatePin:1}
+  });
+  const capIn = (id,t0,t1) => {
+    tl.fromTo(id, {autoAlpha:0, y:16}, {autoAlpha:1, y:0, duration:.3}, t0);
+    if (t1) tl.to(id, {autoAlpha:0, y:-12, duration:.25}, t1);
+  };
+  tl.to(tp, {p:1, duration:1, ease:"none", onUpdate:renderCmd}, 0);
+  capIn("#bcap1", .95, 2.35);
+  tl.to(left,{x:0,autoAlpha:1},1.0).to(right,{x:0,autoAlpha:1},1.15)
+    .to(deck,{y:0,autoAlpha:1},1.3).to(back,{y:0,autoAlpha:1},1.45)
+    .to(toe,{y:0,autoAlpha:1},1.6).to(top,{y:0,autoAlpha:1},1.75);
+  capIn("#bcap2", 2.55, 3.7);
+  tl.to(joints,{autoAlpha:1,duration:.4},2.6);
+  capIn("#bcap3", 3.85, 5.15);
+  tl.to(db1,{x:0,y:0,autoAlpha:1},3.9).to(db2,{x:0,y:0,autoAlpha:1},4.15).to(db3,{x:0,y:0,autoAlpha:1},4.4);
+  tl.to(joints,{autoAlpha:0,duration:.3},5.0);
+  capIn("#bcap4", 5.35, 6.6);
+  tl.to(f1,{x:0,y:0,autoAlpha:1},5.4).to(f2,{x:0,y:0,autoAlpha:1},5.65).to(f3,{x:0,y:0,autoAlpha:1},5.9);
+  capIn("#bcap5", 6.8, null);
+  tl.to("#bdg1",{autoAlpha:1,y:0,duration:.3},6.9)
+    .to("#bdg2",{autoAlpha:1,y:0,duration:.3},7.1)
+    .to("#bdg3",{autoAlpha:1,y:0,duration:.3},7.3)
+    .to(svg,{scale:1.015,transformOrigin:"50% 60%",duration:.6},7.2)
+    .to({}, {duration:.5}, 7.8);
+  gsap.set(["#bdg1","#bdg2","#bdg3"], {y:14});
+})();
 </script>
 </body>
 </html>
