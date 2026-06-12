@@ -1,11 +1,11 @@
-# daiwood-site
+# dai3d-site
 
-Landing page de **DAI** (extensión de SketchUp para diseño de gabinetes) — https://daiwood.com
+Landing page de **DAI** (extensión de SketchUp para diseño de gabinetes) — https://dai3d.com
 
 - Estático puro (sin build): `index.html` + páginas legales. GitHub Pages lo sirve tal cual.
 - Bilingüe EN/ES: strings en el objeto `I18N` dentro de `index.html`; el inglés vive en el
   HTML y el español se aplica por JS (auto-detección por `navigator.language` + toggle).
-- `CNAME` apunta el dominio custom de GitHub Pages a `daiwood.com`.
+- `CNAME` apunta el dominio custom de GitHub Pages a `dai3d.com`.
 
 ## Publicar cambios
 
